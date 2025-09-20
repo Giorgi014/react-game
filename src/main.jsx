@@ -1,10 +1,13 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.jsx'
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import "./index.css";
+import ReactUi from "./ReactUi.jsx";
+import initGame from "./initGame.js";
 
-createRoot(document.getElementById('root')).render(
+createRoot(document.getElementById("ui")).render(
   <StrictMode>
-    <App />
-  </StrictMode>,
-)
+    <ReactUi />
+  </StrictMode>
+);
+
+initGame();
