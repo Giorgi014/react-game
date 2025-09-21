@@ -1,7 +1,9 @@
 import initKaplay from "./kaplayCtx";
+import { isTextBoxVisibleAtom, store, textBoxContentAtom } from "./store";
 
 export default function initGame() {
   const k = initKaplay();
+  const DIAGONAL_FACTOR = 1 / Math.sqrt(2);
 
   k.loadSprite("background", "./background.png");
   k.loadSprite("characters", "./characters.png", {
@@ -30,6 +32,7 @@ export default function initGame() {
     k.area(),
     k.body(),
     k.anchor("center"),
+    k.pos(k.center()),
     k.scale(8),
     "player",
     {
@@ -53,5 +56,73 @@ export default function initGame() {
     ) {
       player.play("left");
     }
+
+    if (
+      player.direction.eq(k.vec2(1, 0)) &&
+      player.getCurAnim().name !== "right"
+    ) {
+      player.play("right");
+    }
+
+    if (
+      player.direction.eq(k.vec2(0, -1)) &&
+      player.getCurAnim().name !== "up"
+    ) {
+      player.play("up");
+    }
+
+    if (
+      player.direction.eq(k.vec2(0, 1)) &&
+      player.getCurAnim().name !== "down"
+    ) {
+      player.play("down");
+    }
+
+    if (
+      player.direction.eq(k.vec2(0, 0)) &&
+      !player.getCurAnim().name.includes("idle")
+    ) {
+      player.play(`${player.getCurAnim().name}-idle`);
+    }
+
+    if (player.direction.x && player.direction.y) {
+      player.move(player.direction.scale(DIAGONAL_FACTOR * player.speed));
+      return;
+    }
+
+    player.move(player.direction.scale(player.speed));
+  });
+
+  const npc = k.add([
+    k.sprite("characters", { anim: "npc-left" }),
+    k.area(),
+    k.body({ isStatic: true }),
+    k.anchor("center"),
+    k.scale(8),
+    k.pos(1480, 500),
+  ]);
+
+  npc.onCollide("player", (player) => {
+    if (player.direction.eq(k.vec2(0, -1))) {
+      store.set(textBoxContentAtom, "Beautiful day, isn't it?");
+      npc.play("npc-down");
+    }
+
+    if (player.direction.eq(k.vec2(0, 1))) {
+      store.set(textBoxContentAtom, "Those rocks are heavy!");
+      npc.play("npc-up");
+    }
+
+    if (player.direction.eq(k.vec2(1, 0))) {
+      store.set(textBoxContentAtom, "This text box is made with React.js!");
+      npc.play("npc-left");
+    }
+
+    if (player.direction.eq(k.vec2(-1, 0))) {
+      store.set(textBoxContentAtom, "Is the water too cold?");
+      npc.play("npc-right");
+    }
+
+    store.set(isTextBoxVisibleAtom, true);
   });
 }
