@@ -12,6 +12,7 @@
   "dependencies": {
     "jotai": "^2.14.0",
     "kaplay": "^4000.0.0-alpha.10",
+    "motion": "^12.23.18",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.9.1"
